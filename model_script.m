@@ -11,26 +11,6 @@ syms psi1 psi2 psi3 d_psi1 d_psi2 d_psi3 real
 %% Model physical parameters
 disp('Model physical parameters');
 
-% Uncertain parameters
-disp('Uncertain parameters');
-rK_u = 0.120; % radius of omni wheel=3cm
-rW_u = 0.05; % radius of the body  
-rA_u = 0.126; % distance between centre of ball and centre of gravity of the body  
-l_u = ureal('l',0.22634,'Percentage',20); % mass of the body and omni wheel  
-%l_u = 0.22634; % mass of the body and omni wheel  
-mAW_u = 6.71; % mass of the basket ball  
-mK_u = 0.625; % Inertia of the body and Omni wheels in the body reference frame A  
-A_ThetaAWx_u = 1.41271413; 
-A_ThetaAWy_u = 1.41271311; 
-A_ThetaAWz_u = 0.05359646;
-ThetaKi_u = 0.003606375;
-ThetaWi_u = 0.01504;
-%A_ThetaAWx_u = ureal('A_ThetaAWx',1.41271413,'Percentage',20); 
-%A_ThetaAWy_u = ureal('A_ThetaAWy',1.41271311,'Percentage',20); 
-%A_ThetaAWz_u = ureal('A_ThetaAWz',0.05359646,'Percentage',20);
-%ThetaKi_u = ureal('ThetaKi',0.003606375,'Percentage',20);
-%ThetaWi_u = ureal('ThetaWi',0.01504,'Percentage',20);
-
 % take symbolic params
 syms rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi real;
 parmas_s = [rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi];
@@ -286,34 +266,35 @@ f_ = [x2, model(1), x4, model(2), x6, model(3), x8, model(4), x10, model(5)]';
 f_ = subs(f_, {diff(th_x,t), diff(th_y,t), diff(th_z,t), diff(ph_x,t), diff(ph_y,t)}, {x2 x4 x6 x8 x10});
 f_ = subs(f_, {th_x, th_y, th_z, ph_x, ph_y}, {x1 x3 x5 x7 x9});
 f_par = subs(f_, {T1, T2, T3}, {u1 u2 u3});
-f = f_par;
-
 toc
+
+% saving the nonlinear model to the mat file for further use
+n_model = f_par;
+save nlin_model n_model;
 
 %% Adding linearisation point
 disp('Adding linearisation point');
 % nominal posiiton
 x0 = [0 0 0 0 0  0 0 0 0 0]';
 u0 = [0 0 0]';
-
 %% Linearisation
 disp('Linearisation');
 tic;
 A_ = {};
 B_ = {};
-A_{1} = simplify(vpa(subs(diff(f,x1), [x; u], [x0; u0]),2));
-A_{2} = simplify(vpa(subs(diff(f,x2), [x; u], [x0; u0]),2));
-A_{3} = simplify(vpa(subs(diff(f,x3), [x; u], [x0; u0]),2));
-A_{4} = simplify(vpa(subs(diff(f,x4), [x; u], [x0; u0]),2));
-A_{5} = simplify(vpa(subs(diff(f,x5), [x; u], [x0; u0]),2));
-A_{6} = simplify(vpa(subs(diff(f,x6), [x; u], [x0; u0]),2));
-A_{7} = simplify(vpa(subs(diff(f,x7), [x; u], [x0; u0]),2));
-A_{8} = simplify(vpa(subs(diff(f,x8), [x; u], [x0; u0]),2));
-A_{9} = simplify(vpa(subs(diff(f,x9), [x; u], [x0; u0]),2));
-A_{10} = simplify(vpa(subs(diff(f,x10), [x; u], [x0; u0]),2));
-B_{1} = simplify(vpa(subs(diff(f,u1), [x; u], [x0; u0]),2));
-B_{2} = simplify(vpa(subs(diff(f,u2), [x; u], [x0; u0]),2));
-B_{3} = simplify(vpa(subs(diff(f,u3), [x; u], [x0; u0]),2));
+A_{1} = simplify(vpa(subs(diff(n_model,x1), [x; u], [x0; u0]),2));
+A_{2} = simplify(vpa(subs(diff(n_model,x2), [x; u], [x0; u0]),2));
+A_{3} = simplify(vpa(subs(diff(n_model,x3), [x; u], [x0; u0]),2));
+A_{4} = simplify(vpa(subs(diff(n_model,x4), [x; u], [x0; u0]),2));
+A_{5} = simplify(vpa(subs(diff(n_model,x5), [x; u], [x0; u0]),2));
+A_{6} = simplify(vpa(subs(diff(n_model,x6), [x; u], [x0; u0]),2));
+A_{7} = simplify(vpa(subs(diff(n_model,x7), [x; u], [x0; u0]),2));
+A_{8} = simplify(vpa(subs(diff(n_model,x8), [x; u], [x0; u0]),2));
+A_{9} = simplify(vpa(subs(diff(n_model,x9), [x; u], [x0; u0]),2));
+A_{10} = simplify(vpa(subs(diff(n_model,x10), [x; u], [x0; u0]),2));
+B_{1} = simplify(vpa(subs(diff(n_model,u1), [x; u], [x0; u0]),2));
+B_{2} = simplify(vpa(subs(diff(n_model,u2), [x; u], [x0; u0]),2));
+B_{3} = simplify(vpa(subs(diff(n_model,u3), [x; u], [x0; u0]),2));
 toc
 
 %% Create A and B parametric functions

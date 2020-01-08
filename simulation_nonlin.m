@@ -1,5 +1,5 @@
 % inital condition
-X0 = [pi/10 0 pi/10 0 0 0 0 0 0 0]';
+X0 = [pi/10 0 pi/10 0 -pi/10 0 0 0 0 0]';
 
 % nonlinear simulation
 Ts = 0.01;
@@ -14,7 +14,7 @@ tic;
 for i = 1:length(t_nlin)
     % input values
     U = -K*X;
-    dX = nlin_model(X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8), X(9), X(10), U(1), U(2), U(3));
+    dX = nlin_model_wcu(X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8), X(9), X(10), U(1), U(2), U(3));
     
     % integration
     X = X + dX*Ts;
@@ -29,7 +29,7 @@ toc
 % linear simulation
 disp('lienar system simulation');
 tic;
-[y_lin,t_lin,x_lin] = initial(feedback(G,K),X0,T_max);
+[y_lin,t_lin,x_lin] = initial(feedback(G_wcu,K),X0,T_max);
 toc
 
 %% plotting x
