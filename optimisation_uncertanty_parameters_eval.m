@@ -1,52 +1,16 @@
-% Model physical parameters
-disp('Model physical parameters with uncertainties');
+%%%
+%  Ballbot uncertainty based on physiscal parameters analysis
+%
+%   Contents:
+%       - create parametric nonlinear model
+%           - create m-function with nonlinear model with nominal parameters       
+%       - linarise nonlinear model around 0 with physiscal parameters of
+%       the system as variables - for uncertainty analysis
+%           - create m-functions for matrices A,B_u and B_w 
+%
+%  Created January 2020 by Antun Skuric
+%%%
 
-% Uncertain parameters
-rK_n = 0.120; % radius of the ball
-rW_n = 0.05; % radius of omni wheel=5cm
-rA_n = 0.126; % radius of the body  
-l_n = 0.22634; % distance between centre of ball and centre of gravity of the body 
-mAW_n = 6.71; % mass of the body and omni wheel  
-mK_n = 0.625; % mass of the basket ball  
-A_ThetaAWx_n = 1.41271413; % Inertia of the body and Omni wheels in the body reference frame A  
-A_ThetaAWy_n = 1.41271311;
-A_ThetaAWz_n = 0.05359646;
-ThetaKi_n = 0.003606375;
-ThetaWi_n = 0.01504; 
-
-params_n = [rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n];
-
-
-% Uncertain variation of the parameters
-A_ThetaAWx_var = 15; % percent
-l_var = 10; % percent
-A_ThetaAWz_var = 15;% percent
-ThetaKi_var = 15;% percent
-A_ThetaAWy_var = 15; % percent
-ThetaWi_var = 15;% percent
-
-%% nominal model
-disp('Nominal model calculation');
-
-% A matrix
-tic
-A_u= fA(rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n);
-fprintf('A matrix :  %f sec\n',toc);
-% B matrix
-tic
-B_u= fB(rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n);
-fprintf('B matrix :  %f sec\n',toc);
-
-% state space model from matrices
-G_n = ss(A_u,B_u,eye(10),zeros(10,3));
-
-% LQR controller design
-Q = diag([1 1 1 1 1 1 1 1 1 1]);
-R = diag([1 1 1]);
-K = lqr(G_n,Q,R);
-
-% nominal closed loop system
-T_n = feedback(G_n,K);
 
 %% Optimisation problem
 disp('Constrained optimisation approach to finding worst case condition');
@@ -86,6 +50,7 @@ fprintf('B matrix :  %f sec\n',toc);
 % state space model from matrices
 wcu.G = ss(A_u,B_u,eye(10),zeros(10,3));
 
+wcu.max_gain = getPeakGain(wcu.G);
 
 
 %% Creating a matlab function from nonlinear model
@@ -95,7 +60,7 @@ tic;
 
 % take symbolic params
 syms rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi real;
-syms x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3 real
+syms x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3 w1 w2 real
 load nlin_model n_model;
 params_s = [rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi];
 % parameter values
@@ -103,10 +68,41 @@ params_wcu = [rK_n, rW_n, rA_n, wcu.l, mAW_n, mK_n, wcu.A_ThetaAWx, wcu.A_ThetaA
 n_model_wcu = subs(n_model, params_s, params_wcu);
 % create a file
 disp('Writing function in the file');
-nlin_model_wcu = matlabFunction(n_model_wcu,'Optimize',false,'Vars',[x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3],'File','nlin_model_wcu');
+nlin_model_wcu = matlabFunction(n_model_wcu,'Optimize',false,'Vars',[x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3 w1 w2],'File','nlin_model_wcu');
 toc;
 
-%% Simulate and compare
-disp('Simulate')
+%% Simulate and compare worst case linear and nonliner
+disp('Simulate and compare worst case linear and nonliner')
 X0 = [pi/10 0 -pi/10 0 pi/10 0 0 0 0 0]';
-initialplot_compare_nlin(@nlin_model_wcu,wcu.G,K,X0,4)
+T_sim = 4; %sec
+initialplot_compare_nlin(@nlin_model_wcu,wcu.G,K,X0,T_sim)
+
+%% Nominal and worst case linear model comparison
+disp('Nominal and worst case linear model comparison')
+disp('Initial condition response');
+
+% initialplot
+X0 = [pi/10 0 pi/10 0 pi/10 0 0 0 0 0]';
+T_sim = 3; %sec
+figure(100);
+initialplot(feedback(wcu.G,K),'b',X0,T_sim); 
+hold on;
+initialplot(feedback(G_n,K),'r',X0,T_sim);
+legend('worst case','nominal')
+
+% bode
+disp('Bode plot');
+figure(101);
+bodemag(feedback(wcu.G,K),'b');
+hold on;
+bodemag(feedback(G_n,K),'r');
+legend('worst case','nominal')
+
+%% Singular value plot
+disp('Singular value plot');
+figure(102);
+sigma(feedback(wcu.G*K,eye(10)),'b');
+hold on;
+sigma(feedback(G_n*K,eye(10)),'r');
+legend('worst case','nominal')
+

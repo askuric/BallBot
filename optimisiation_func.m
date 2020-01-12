@@ -20,6 +20,7 @@ function y = optimisiation_func(x, K , rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_The
     B_u= fB(rK_n, rW_n, rA_n, l_v, mAW_n, mK_n, A_ThetaAWx_v, A_ThetaAWy_v, A_ThetaAWz_v, ThetaKi_v, ThetaWi_v);
         
     if ~isstable(feedback(ss(A_u,B_u,eye(10),zeros(10,3)),K)) 
+        disp('This controller cannot stabilize full set of suggested parameters - consider narrowing the uncertainties')
         error('System is unstable for parameters - X : %f %f %f %f %f %f %f',...
                                             x(1), x(2), x(3), x(4),x(5),x(6));
     else

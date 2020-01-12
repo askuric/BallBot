@@ -14,7 +14,7 @@ tic;
 for i = 1:length(t_nlin)
     % input values
     U = -K*X;
-    dX = nlin_model_wcu(X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8), X(9), X(10), U(1), U(2), U(3));
+    dX = nlin_model_wcu(X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8), X(9), X(10), U(1), U(2), U(3), 0,0);
     
     % integration
     X = X + dX*Ts;
