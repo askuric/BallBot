@@ -13,7 +13,7 @@ params_wcu = [rK_n, rW_n, rA_n, wcu.l, mAW_n, mK_n, wcu.A_ThetaAWx, wcu.A_ThetaA
 n_model_wcu = subs(n_model, params_s, params_wcu);
 % create a file
 disp('Writing function in the file');
-nlin_model_wcu = matlabFunction(n_model_wcu,'Optimize',false,'Vars',[x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3 w1 w2],'File','nlin_model_wcu');
+nlin_model_w = matlabFunction(n_model_wcu,'Optimize',false,'Vars',[x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3 w1 w2],'File','nlin_model_wcu');
 toc;
 
 %% Simulate and compare worst case linear and nonliner
