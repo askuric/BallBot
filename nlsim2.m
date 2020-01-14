@@ -10,7 +10,7 @@ function nlsim2(fun_nlin, K, u,t_nlin, P, figure_num)
 
     
     Xp = zeros(10,1);
-    Pd = c2d(P,Ts);
+    Pd = P; %c2d(P,Ts);
     
     Xk = zeros(10,1);
     Kd = c2d(K,Ts);
@@ -22,16 +22,17 @@ function nlsim2(fun_nlin, K, u,t_nlin, P, figure_num)
 	fprintf('Nonlinear simulation: %2.2f sec / %05.2f sec\n',T_max,0)
     for i = 1:length(t_nlin)
         % input values
-        dXk = Kd.a*Xk + Kd.b*(X);
+        Xk = Kd.a*Xk + Kd.b*(X);
         % integration
-        Xk = Xk + dXk*Ts;
+        %Xk = Xk + dXk*Ts;
         U = Kd.c*Xk;
         
-        %dX = fun_nlin(X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8), X(9), X(10), U(1), U(2), U(3), u(5,i), u(6,i));
-        dX = Pd.a(1:10,1:10)*Xp + Pd.b(1:10,:)*[u(:,i); U];
+        dX = fun_nlin(X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8), X(9), X(10), U(1), U(2), U(3), u(5,i), u(6,i));
+        %dX = Pd.a(1:10,1:10)*Xp + Pd.b(1:10,:)*[u(:,i); U];
                  
         % integration
         X = X + dX*Ts;
+        %X = dX;
         % additive noise measurement
         %X(1:4) = X(1:4) + 0.5/180*pi*u(1:4,i); 
         X(1:4) = X(1:4) + P.d(1:4,1:4)*u(1:4,i); 
