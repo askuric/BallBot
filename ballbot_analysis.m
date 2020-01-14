@@ -13,9 +13,6 @@
 %            
 %       - comparison of behavior with nonlinear model
 %
-%
-%
-%
 %  Created January 2020 by Antun Skuric
 %%%
 disp('Starting full nonlinear Ballbot model derivation');
@@ -23,6 +20,7 @@ disp('This will take few minutes');
 
 % %clear all
 %% Model physical parameters definition
+% Introducing the physical parameters of the system
 disp('Model physical parameters with uncertainties');
 global rK_n rW_n  rA_n  l_n  mAW_n mK_n  A_ThetaAWx_n  A_ThetaAWy_n  A_ThetaAWz_n  ThetaKi_n  ThetaWi_n;
 
@@ -47,11 +45,31 @@ beta3 = 4/3*pi;
 
 % vector of nominal parameters
 params_n = [rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n];
+
+%% Derivation script of the nonlinear model
+% Modeling ot the nonlinear system - extended matlab version of the script FInal.nb 
+% made in Mathematica
 % 
+<<<<<<< HEAD
 %% Derivation script of the nonlinear model 
 model_script_disturbance;
  
+=======
+% - Parametric nonlinear model creation
+% - Linearization around 0
+% - Creation of simulation functions for further analyisis - linear and nonlinear
+% 
+% Execution can take 5-10 minutes
+model_script_disturbance;
+
+>>>>>>> 6fe06e234b793645933c190975bf740f2b186c11
 %% Linear nominal model sysnthesys
+% Creation of linear transfer funciton based on linearised matrices of the Ballbot 
+% and the nominal parameters
+% 
+% Additionally the LQR controller is provided (based on the LQR controller in 
+% the report) as a default controller to be compared in further analysis.
+
 disp('Nominal model calculation');
 
 % A matrix
@@ -70,24 +88,35 @@ fprintf('B_w matrix :  %f sec\n',toc);
 % state space model from matrices
 G_n = ss(A_n, B_n, eye(10), zeros(10,3));
 
-% LQR controller design
+%% LQR controller design
 Q = diag([100 50 100 50 40 20 20 10 20 10]);
 R = diag([100 100 100]);
 K_lqr = lqr(G_n,Q,R);
 
-%% linear and nonlinear model initial condition response comparison
+%% Linear and nonlinear model initial condition response comparison
+% Finally, simple graph of initial condition response for linear and nonlinear 
+% system with nominal parameters to see how well does the lienarized system corespond 
+% with the nonlinear
+
+%% linear and nonlinear model initial condition response compariso
 disp('Compare linear and nonlinear nominal model');
 X0 = [pi/20 0 pi/20 0 pi/10 0 0 0 0 0]';
 T_max = 4; %s
 initialplot_compare_nlin(@nlin_model_n,G_n,K_lqr,X0,T_max,1,2)
-
+drawnow
 
 %% Introducing the uncertainties
+% The uncertainties are introduced into the physiscal parameters of the system. 
+% The idea is that for the variables you cannot measure you should have some uncertainty 
+% about their values. 
+% 
+% The uncertainties are set as the percentage.For example if l_var is 20, that 
+% means that your height of center of mass can be +-20% different than your nominal 
+% value.
 disp('Introducing physical parameter uncertainties');
-
 % Uncertain variation of the parameters
 A_ThetaAWx_var = 15; % percent
-l_var = 15; % percent
+l_var = 10; % percent
 A_ThetaAWz_var = 15;% percent
 ThetaKi_var = 15;% percent
 A_ThetaAWy_var = 15; % percent
@@ -97,6 +126,13 @@ ThetaWi_var = 15;% percent
 visualize_uncertainty_samples
 
 %% Find the worst case system based on parameter uncertainties
+% To be able to find the worst case parameters we define the optimisation problem 
+% based on disk margin. 
+% 
+% Basically we are changing the parameter values and searching to the minimum 
+% of the stability margin (diskmargin)
+% 
+% The minimal margin corresponds to the worst case parameters
 disp('Find the worst case parameters (minimal stability margin)');
 wcu = find_wcu_optimisation(l_var, ThetaWi_var, ThetaKi_var, A_ThetaAWx_var, A_ThetaAWy_var, A_ThetaAWz_var, K_lqr)
 % variable wcu contains 
@@ -110,14 +146,14 @@ disp('Nominal and worst case linear model comparison')
 disp('Initial condition response');
 
 % initialplot
-X0 = [pi/20 0 pi/20 0 pi/20 0 0 0 0 0]';
+X0 = [pi/20 0 pi/20 0 pi/10 0 0 0 0 0]';
 T_sim = 3; %sec
 figure(110);
 initialplot(feedback(wcu.G,K_lqr),'b',X0,T_sim); 
 hold on;
 initialplot(feedback(G_n,K_lqr),'.-r',X0,T_sim);
 legend('worst case','nominal')
-sgtitle('Closed loop (LQR) - Inirtial condition resposnce comparitons nominal and worst case')
+sgtitle('Closed loop (LQR) - Inirtial condition response comparison nominal and worst case')
 
 %% Singular value plota
 disp('Singular value plot');
@@ -127,31 +163,36 @@ hold on;
 sigma(feedback(G_n,K_lqr),'r');
 legend('worst case','nominal')
 grid on;
-sgtitle('Closed loop (LQR) - Singular value plot comparitons nominal and worst case')
+sgtitle('Closed loop (LQR) - Singular value plot comparison nominal and worst case')
+	   
 %% Validate worst case performance with the nonlinear model
 visualize_nonlinear_worst_case;
 
 %% Distrubance rejection and noise attenuation
 % Ballbot has two type of disturbance 
-% - force acting on the body - hunam interaction
-% - measurement noise 
-%   > acceletometer and gyro
-%   > influences thetax, d_thetax, thetay, d_thetay  
-
+% - force acting on the body - hunam interaction (w)_
+% - measurement noise  (_n_)
+% > acceletometer and gyro
+% > influences thetax, d_thetax, thetay, d_thetay  
+% 
 % Ballbot system
-% dx = Ax + [B_n B_w B_u][w n u]'
-% y = Cx + [D_n D_w D_u][w n u]'
-% u = Kx
+% dx = Ax + [B_n B_w B_u]*[w n u]'
+% y = Cx + [D_n D_w D_u]*[w n u]'
+% u = K*x
 
 % definining the standardized testing input for distrubance rejection
-t_d = linspace(0,10,1000);
+t_d = linspace(0,20,2000);
 N_d = length(t_d);
 n = randn(4,N_d);
+% measurement noise
 n = n/max(n(:));
+% forces
 wx = [zeros(1,0.2*N_d), ones(1,0.1*N_d), zeros(1,0.7*N_d)];
 wy = [zeros(1,0.7*N_d), -ones(1,0.1*N_d) zeros(1,0.2*N_d)];
 dist = [n; wx; wy];
 
+% plotting the distrubance signal
+% measurement noise
 figure(200);
 for i = 1:4
     subplot(6,1,i);
@@ -159,15 +200,17 @@ for i = 1:4
     hold on
     title(strcat('n',num2str(i)))
 end
+% disturbance forces on body
 for i = 1:2
     subplot(6,1,4+i);
     plot(t_d,dist(4+i,:),'LineWidth',1.5);
     hold on
     title(strcat('w',num2str(i)))
 end
-sgtitle('Testing input signal - measurement noiser and disturbance force on the body')
+sgtitle('Testing input signal - measurement noise and disturbance force on the body')
 
 %% Creating the factorial representaion
+
 % disturbance matrix
 B_w = fW(rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n);
 % noise matrix
@@ -184,10 +227,6 @@ D_y = [D_n  D_u ; [zeros(3,6) eye(3)]];
 % model for simulation using y as output
 P = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_y; [D_n D_u] ]);
 
-% complarison linear nonlinear disturbance rejection
-nlsim(@nlin_model_n,K_lqr,dist,t_d,P,201);
-sgtitle('Closed loop LQR linear vs nonlinear model with nominal parameters parameters')
-
 % worst case model
 % disturbance matrix
 B_w_wcu = fW(rK_n, rW_n, rA_n, wcu.l, mAW_n, mK_n, wcu.A_ThetaAWx, wcu.A_ThetaAWy, wcu.A_ThetaAWz, wcu.ThetaKi, wcu.ThetaWi);
@@ -195,59 +234,94 @@ B_w_wcu = fW(rK_n, rW_n, rA_n, wcu.l, mAW_n, mK_n, wcu.A_ThetaAWx, wcu.A_ThetaAW
 Pz_wc = ss(wcu.G.a, [B_n B_w_wcu wcu.G.b], [C_z; wcu.G.c], [ D_z; [D_n D_u]]);
 % model for simulation using y as output
 P_wc = ss(wcu.G.a, [B_n B_w_wcu wcu.G.b], [C_z; wcu.G.c], [ D_y; [D_n D_u]]);
-
+%% Initial LQR disturbance rejection
+% Compariosn of linear and nonliner performcane using nominal and worst case 
+% parameters
 % complarison linear nonlinear disturbance rejection
-nlsim(@nlin_model_wcu,K_lqr,dist,t_d,P_wc,202);
-sgtitle('Closed loop LQR linear vs nonlinear model with worst case parameters')
-
-%% plot singular values of distrurbance rejection loop
+nlsim(@nlin_model_n,K_lqr,dist,t_d,P,201,202);
+figure(201)
+sgtitle('LQR linear vs nonlinear model with nominal parameters - states')
+figure(202)
+sgtitle('LQR linear vs nonlinear model with nominal parameters - control signals')
+% complarison linear nonlinear disturbance rejection
+nlsim(@nlin_model_wcu,K_lqr,dist,t_d,P_wc,203,204);
+figure(203)
+sgtitle('LQR linear vs nonlinear model with worst case parameters - states')
+figure(204)
+sgtitle('LQR linear vs nonlinear model with worst case parameters - control signals')
+%% 
+% Singular value plot for disturbance rejection fonominal and worst case model
+% plot singular values of distrurbance rejection loop
 figure(301)
 sigma(lft(P,-K_lqr),'r',lft(P_wc,-K_lqr),'b',(0.1:0.01:100));
 legend('nominal','worst case');
 grid on
 title('Singular values plot for distrubance rejection closed loop with LQR')
-
-%% H-infinity controller design fixed
-% hinf fixed structure - gain
+%% H-infinity controller design
+% Fixed structure - gain U=K*x; 
 K_tun = realp('K_t',ones(3,10));   
 K_tun.Minimum = -100*ones(3,10); 
 K_tun.Maximum = 100*ones(3,10);
 [C,gamma,info] = hinfstruct(Pz_wc,-K_tun);
-K_hinf = C.Blocks.K_t.Value;
-
+K_hinf = C.Blocks.K_t.Value
+%% Comparison of H-infinity and LQR 
 %% plot singular values of distrurbance rejection loop
 figure(302)
 sigma(lft(P,-K_hinf),'r',lft(P_wc,-K_hinf),'b',lft(P,-K_lqr),'--r',lft(P_wc,-K_lqr),'--b',(0.1:0.01:100));
-hold on
-sigma(lft(P,K),'y');
 legend('nominal H-inf','worst case H-inf','nominal LQR','worst case LQR');
 grid on
 title('Singular values plot for distrubance rejection closed loop with H-infinity')
-
 %% complarison H-infinity and LQR linear models
 figure(303)
 lsim(lft(P,-K_hinf),lft(P,-K_lqr),dist,t_d);
-sgtitle('H-Infinity and LQR comparison on disturbance rejection nominal linear proces')
+sgtitle('LQR and H-inifnity controller disturbance rejection - nominal linear process')
 figure(304)
 lsim(lft(P_wc,-K_hinf),lft(P_wc,-K_lqr),dist,t_d);
-sgtitle('H-Infinity and LQR comparison on disturbance rejection worst case linear proces')
+sgtitle('LQR and H-inifnity controller disturbance rejection - worst case linear process')
 %% complarison H-infinity and nonlinear model
-nlsim(@nlin_model_wcu,K_hinf,dist,t_d,P_wc,305);
-sgtitle('Closed loop H-infinity linear vs nonlinear model with worst case parameters')
-nlsim(@nlin_model_n,K_hinf,dist,t_d,P,306);
-sgtitle('Closed loop H-infinity linear vs nonlinear model with nominal parameters')
+nlsim(@nlin_model_wcu,K_hinf,dist,t_d,P_wc,305,306);
+figure(305);
+sgtitle('H-inifnity nominal linear vs nonlinear - states')
+figure(306)
+sgtitle('H-inifnity nominal linear vs nonlinear - control signals')
+nlsim(@nlin_model_n,K_hinf,dist,t_d,P,307,308);
+figure(307)
+sgtitle('H-inifnity worst case linear vs nonlinear - states')
+figure(308)
+sgtitle('H-inifnity worct case linear vs nonlinear - control signals')
 
-%% H-infinity controller design not fixed
-%% hinf controller general
+%% H-infinity controller design not fixed 
+% Full state space controller				  
 nmeas = 10;
 ncont = 3;
-opts = hinfsynOptions('Display','on');
-[K_hinf_f,CL,gamma] = hinfsyn(Pz,nmeas,ncont,opts);
+opts = hinfsynOptions('Display','on','LimitGain','on');
+[K_hinf_full,CL,gamma,info] = hinfsyn(Pz,nmeas,ncont,opts);
+K_hinf_full
 %% Comparison LQR and H-inifnity full
-lsim(lft(P,K),lft(P,-K_lqr),dist,t_d);
 
-%% Bode diagram of LQR, Hinfinity fixed and Hinfinity full
-bodemag(lft(P,K_lqr),'r',lft(P,K_hinf),'b',lft(P,K_hinf_f),'k');
-legend('lqr','h-inf gain','h-inf full')
+figure(404)
+lsim(lft(P,K_hinf_full),lft(P,-K_lqr),dist,t_d);
+legend('h-inf full','lqr');
+%% Bode diagram of LQR, H-infinity fixed and H-infinity full
+% We can see that Full H-infinity controller has lowest gain for almost all 
+% the transfrer functions on the plot making it the most robustly stable one.
+
+figure(405)
+bodemag(lft(P,K_lqr),'r',lft(P,K_hinf),'b',lft(P,K_hinf_full),'k');
+legend('lqr','h-inf gain','h-inf full');
+%% H-infintiy norms for nominal and worst case parameter linear model comparison of LQR, fixed H-inifnity and Full H-Infinity controller
+hinfnorm(lft(P,-K_lqr))
+hinfnorm(lft(P,-K_hinf))
+hinfnorm(lft(P,K_hinf_full))
+
+hinfnorm(lft(P_wc,-K_lqr))
+hinfnorm(lft(P_wc,-K_hinf))
+hinfnorm(lft(P_wc,K_hinf_full))
+
+%% Closed loop singular value plot comparison
+% plot singular values of distrurbance rejection loop
+figure(601)
+sigma(lft(P,-K_lqr),'r',lft(P,-K_hinf),'b',lft(P,-K_hinf_full),'k',lft(P_wc,-K_lqr),'--r',lft(P_wc,-K_hinf),'--b',lft(P_wc,-K_hinf_full),'--k',(0.05:0.01:1000));
+legend('LQR','H-inf fixed','H-inf full','LQR (wc)','H-inf fixed (wc)','H-inf full (wc)');
 
 
