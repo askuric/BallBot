@@ -17,7 +17,10 @@ based on worst case system
 Created January 2020 by Antun Skuric
 
 ### Running
-- Download the directory to your pc and open matlab in the same directory. 
+- Download the directory to your pc and open matlab in the same directory.
+```shell
+git clone https://github.com/askuric/BallBot.git
+```
 
 - To run just open in matlab vindow the live script `ballbot_analysis_live.mdx` and follow the execution. 
 Be aware that it may take some time to execute completely. 10-20 minutes 
