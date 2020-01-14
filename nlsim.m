@@ -44,6 +44,8 @@ function nlsim(fun_nlin, K, u,t_nlin, P, figure_x,figure_u)
         title(strcat('x',num2str(i)));
         grid on
     end
+    subplot(5,2,1)
+    legend('linear','non-linear')
     figure(figure_u)
     % plotting u
     for i=1:3
@@ -54,10 +56,8 @@ function nlsim(fun_nlin, K, u,t_nlin, P, figure_x,figure_u)
         title(strcat('u',num2str(i)));
         grid on
     end
-%     subplot(12,1,i)
-%     legend('linear','non-linear')
-%     subplot(5,2,2)
-%     legend('linear','non-linear')
+    subplot(3,1,1)
+    legend('linear','non-linear')
 
     
 end

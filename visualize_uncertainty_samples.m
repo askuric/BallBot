@@ -41,13 +41,12 @@ disp('It may take few minutes');
 if N <= 20 % a bit of protection of too much plotting
     tic
     X0 = [pi/20 0 pi/20 0 0 0 0 0 0 0]';
-    t_sim = [0:0.01:4];
+    t_sim = 4;
     figure(100);
     for i = 1:N
-        initialplot(T_arr{i},'b',X0,t_sim); 
-        hold on;
+        initialplt(T_arr{i},'b',X0,t_sim,100); 
     end
-    initialplot(T_n,'.-r',X0,t_sim);
+    initialplt(T_n,'.-r',X0,t_sim,100);
     toc
 else
     disp('Too mmany samples to draw plot');    
@@ -65,6 +64,7 @@ if N <= 20 % a bit of protection of too much plotting
         hold on;
     end
     sigma(T_n,'.-r');
+    grid on;
     toc
 else
     disp('Too mmany samples to draw plot');
