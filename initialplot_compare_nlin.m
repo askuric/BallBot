@@ -38,14 +38,16 @@ toc
 %% plotting x
 figure(fig1);
 for i=1:10
-    subplot(10,1,i)
+    subplot(5,2,i)
     plot(t_lin,x_lin(:,i));
     hold on
     plot(t_nlin,x_nlin(:,i));
     title(strcat('x',num2str(i)));
     grid on
 end
-subplot(10,1,1)
+subplot(5,2,1)
+legend('linear','non-linear')
+subplot(5,2,2)
 legend('linear','non-linear')
 sgtitle('Initial condition response - Linearized and nonlinear system with LQR controller - states')
 % plotting u

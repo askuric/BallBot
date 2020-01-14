@@ -1,4 +1,4 @@
-function nlsim(fun_nlin, K, u,t_nlin, P, figure_num)
+function nlsim(fun_nlin, K, u,t_nlin, P, figure_x,figure_u)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 % inital condition
@@ -34,19 +34,20 @@ function nlsim(fun_nlin, K, u,t_nlin, P, figure_num)
     [y_lin t_lin c]= lsim(lft(P,-K),u,t_nlin);
     
     %% plotting x
-    figure(figure_num)
+    figure(figure_x)
     hold on
     for i=1:10
-        subplot(13,1,i)
+        subplot(5,2,i)
         plot(t_nlin,y_lin(:,i));
         hold on
         plot(t_nlin,x_nlin(:,i),'r');
         title(strcat('x',num2str(i)));
         grid on
     end
+    figure(figure_u)
     % plotting u
     for i=1:3
-        subplot(13,1,10+i)
+        subplot(3,1,i)
         plot(t_nlin,y_lin(:,10+i));
         hold on
         plot(t_nlin,u_nlin(:,i),'r');

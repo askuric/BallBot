@@ -22,6 +22,6 @@ X0 = [pi/20 0 -pi/20 0 pi/20 0 0 0 0 0]';
 T_sim = 4; %sec
 initialplot_compare_nlin(@nlin_model_wcu,wcu.G,K_lqr,X0,T_sim,120,121)
 figure(120);
-sgtitle('Initial condition response - Linearized and nonlinear WC system with LQR controller - states')
+sgtitle('Linearized and nonlinear WC system with LQR controller - states')
 figure(121);
-sgtitle('Initial condition response - Linearized and nonlinear WC system with LQR controller - control signals')
+sgtitle('Linearized and nonlinear WC system with LQR controller - control signals')
