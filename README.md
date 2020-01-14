@@ -21,9 +21,12 @@ Created January 2020 by Antun Skuric
 
 - To run just open in matlab vindow the live script `ballbot_analysis_live.mdx` and follow the execution. 
 Be aware that it may take some time to execute completely. 10-20 minutes 
+```shell
+ballbot_analysis_live.mdx
+```
 
 - Also it can be started by writing in Matlab Command Window
-```Matlab
+```shell
 ballbot_analysis
 ```
 
