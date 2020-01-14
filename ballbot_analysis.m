@@ -141,11 +141,9 @@ disp('Initial condition response');
 
 % initialplot
 X0 = [pi/20 0 pi/20 0 pi/10 0 0 0 0 0]';
-T_sim = 3; %sec
-figure(110);
-initialplot(feedback(wcu.G,K_lqr),'b',X0,T_sim); 
-hold on;
-initialplot(feedback(G_n,K_lqr),'.-r',X0,T_sim);
+T_sim = 3; %sec=
+initialplt(feedback(wcu.G,K_lqr),'b',X0,T_sim,110); 
+initialplt(feedback(G_n,K_lqr),'r',X0,T_sim,110);
 legend('worst case','nominal')
 sgtitle('Closed loop (LQR) - Inirtial condition response comparison nominal and worst case')
 
@@ -214,9 +212,9 @@ D_n = 0.5/180*pi*eye(10,4);
 % input D matrix
 D_u = zeros(10,5);
 C_z = [G_n.c; zeros(3,10)];
-D_z = [D_n  D_u ; [zeros(3,6) 30*eye(3)]];
+D_z = [D_n  D_u ; [zeros(3,6) 5*eye(3)]];
 % model for h-infinity synthesis containing z output
-Pz = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_z; [D_n D_u] ]);
+Pz = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_z; [zeros(10,4) D_u] ]);
 D_y = [D_n  D_u ; [zeros(3,6) eye(3)]];
 % model for simulation using y as output
 P = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_y; [D_n D_u] ]);
@@ -225,7 +223,7 @@ P = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_y; [D_n D_u] ]);
 % disturbance matrix
 B_w_wcu = fW(rK_n, rW_n, rA_n, wcu.l, mAW_n, mK_n, wcu.A_ThetaAWx, wcu.A_ThetaAWy, wcu.A_ThetaAWz, wcu.ThetaKi, wcu.ThetaWi);
 % model for h-infinity synthesis containing z output
-Pz_wc = ss(wcu.G.a, [B_n B_w_wcu wcu.G.b], [C_z; wcu.G.c], [ D_z; [D_n D_u]]);
+Pz_wc = ss(wcu.G.a, [B_n B_w_wcu wcu.G.b], [C_z; wcu.G.c], [ D_z; [zeros(10,4) D_u]]);
 % model for simulation using y as output
 P_wc = ss(wcu.G.a, [B_n B_w_wcu wcu.G.b], [C_z; wcu.G.c], [ D_y; [D_n D_u]]);
 %% Initial LQR disturbance rejection
@@ -258,64 +256,80 @@ K_tun.Minimum = -100*ones(3,10);
 K_tun.Maximum = 100*ones(3,10);
 [C,gamma,info] = hinfstruct(Pz_wc,-K_tun);
 K_hinf = C.Blocks.K_t.Value
+
 %% Comparison of H-infinity and LQR 
 %% plot singular values of distrurbance rejection loop
 figure(302)
-sigma(lft(P,-K_hinf),'r',lft(P_wc,-K_hinf),'b',lft(P,-K_lqr),'--r',lft(P_wc,-K_lqr),'--b',(0.1:0.01:100));
+sigma(lft(P,-K_hinf),'r',lft(P_wc,-K_hinf),'--r',lft(P,-K_lqr),'b',lft(P_wc,-K_lqr),'--b',(0.1:0.01:100));
 legend('nominal H-inf','worst case H-inf','nominal LQR','worst case LQR');
 grid on
 title('Singular values plot for distrubance rejection closed loop with H-infinity')
 %% complarison H-infinity and LQR linear models
+linsim(lft(P,-K_hinf),'b',dist,t_d,303,304);
+linsim(lft(P,-K_lqr),'r',dist,t_d,303,304);
 figure(303)
-lsim(lft(P,-K_hinf),lft(P,-K_lqr),dist,t_d);
-sgtitle('LQR and H-inifnity controller disturbance rejection - nominal linear process')
+sgtitle('LQR and H-inifnity disturbance nominal parmas - states')
+legend('H-infinity','LQR')
 figure(304)
-lsim(lft(P_wc,-K_hinf),lft(P_wc,-K_lqr),dist,t_d);
-sgtitle('LQR and H-inifnity controller disturbance rejection - worst case linear process')
-%% complarison H-infinity and nonlinear model
-nlsim(@nlin_model_wcu,K_hinf,dist,t_d,P_wc,305,306);
-figure(305);
-sgtitle('H-inifnity nominal linear vs nonlinear - states')
+sgtitle('LQR and H-inifnity disturbance nominal parmas - control signal')
+legend('H-infinity','LQR')
+linsim(lft(P_wc,-K_hinf),'b',dist,t_d,305,306);
+linsim(lft(P_wc,-K_lqr),'r',dist,t_d,305,306);
+figure(305)
+sgtitle('LQR and H-inifnity disturbance worst case params - states')
+legend('H-infinity','LQR')
 figure(306)
-sgtitle('H-inifnity nominal linear vs nonlinear - control signals')
-nlsim(@nlin_model_n,K_hinf,dist,t_d,P,307,308);
-figure(307)
-sgtitle('H-inifnity worst case linear vs nonlinear - states')
+sgtitle('LQR and H-inifnity disturbance worst case  params - control signal')
+legend('H-infinity','LQR')
+%% complarison H-infinity and nonlinear model
+nlsim(@nlin_model_wcu,K_hinf,dist,t_d,P_wc,307,308);
+figure(307);
+sgtitle('H-inifnity nominal linear vs nonlinear - states')
 figure(308)
+sgtitle('H-inifnity nominal linear vs nonlinear - control signals')
+nlsim(@nlin_model_n,K_hinf,dist,t_d,P,309,310);
+figure(309)
+sgtitle('H-inifnity worst case linear vs nonlinear - states')
+figure(310)
 sgtitle('H-inifnity worct case linear vs nonlinear - control signals')
 
 %% H-infinity controller design not fixed 
-% Full state space controller				  
+% State space controller				  
 nmeas = 10;
 ncont = 3;
 opts = hinfsynOptions('Display','on','LimitGain','on');
-[K_hinf_full,CL,gamma,info] = hinfsyn(Pz,nmeas,ncont,opts);
-K_hinf_full
+[K_hinf_ss,CL,gamma,info] = hinfsyn(Pz_wc,nmeas,ncont,opts);
+K_hinf_ss
 %% Comparison LQR and H-inifnity full
-
+linsim(lft(P,-K_lqr),'b',dist,t_d,404,405);
+linsim(lft(P,K_hinf_ss),'r',dist,t_d,404,405);
 figure(404)
-lsim(lft(P,K_hinf_full),lft(P,-K_lqr),dist,t_d);
-legend('h-inf full','lqr');
+sgtitle('LQR and H-inif (state space) disturbance nominal parmas - states')
+legend('H-infinity','LQR')
+figure(405)
+sgtitle('LQR and H-inif (state space)  disturbance nominal parmas - control signal')
+legend('H-inf ss','LQR')
 %% Bode diagram of LQR, H-infinity fixed and H-infinity full
 % We can see that Full H-infinity controller has lowest gain for almost all 
 % the transfrer functions on the plot making it the most robustly stable one.
 
-figure(405)
-bodemag(lft(P,K_lqr),'r',lft(P,K_hinf),'b',lft(P,K_hinf_full),'k');
-legend('lqr','h-inf gain','h-inf full');
+figure(406)
+bodemag(lft(P,K_lqr),'r',lft(P,K_hinf),'b',lft(P,K_hinf_ss),'k');
+legend('LQR','H-inf gain','F-inf ss');
 %% H-infintiy norms for nominal and worst case parameter linear model comparison of LQR, fixed H-inifnity and Full H-Infinity controller
 hinfnorm(lft(P,-K_lqr))
 hinfnorm(lft(P,-K_hinf))
-hinfnorm(lft(P,K_hinf_full))
+hinfnorm(lft(P,K_hinf_ss))
 
 hinfnorm(lft(P_wc,-K_lqr))
 hinfnorm(lft(P_wc,-K_hinf))
-hinfnorm(lft(P_wc,K_hinf_full))
+hinfnorm(lft(P_wc,K_hinf_ss))
 
 %% Closed loop singular value plot comparison
 % plot singular values of distrurbance rejection loop
-figure(601)
-sigma(lft(P,-K_lqr),'r',lft(P,-K_hinf),'b',lft(P,-K_hinf_full),'k',lft(P_wc,-K_lqr),'--r',lft(P_wc,-K_hinf),'--b',lft(P_wc,-K_hinf_full),'--k',(0.05:0.01:1000));
-legend('LQR','H-inf fixed','H-inf full','LQR (wc)','H-inf fixed (wc)','H-inf full (wc)');
+figure(407)
+sigma(lft(P,-K_lqr),'r',lft(P,-K_hinf),'b',lft(P,-K_hinf_ss),'k',lft(P_wc,-K_lqr),'--r',lft(P_wc,-K_hinf),'--b',lft(P_wc,-K_hinf_ss),'--k',(0.05:0.01:1000));
+legend('LQR','H-inf','H-inf ss','LQR (wc)','H-inf (wc)','H-inf ss (wc)');
+grid on;
 
 
