@@ -48,9 +48,9 @@ beta3 = 4/3*pi;
 % vector of nominal parameters
 params_n = [rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n];
 % 
-% %% Derivation script of the nonlinear model 
-% model_script_disturbance;
-% 
+%% Derivation script of the nonlinear model 
+model_script_disturbance;
+ 
 %% Linear nominal model sysnthesys
 disp('Nominal model calculation');
 
