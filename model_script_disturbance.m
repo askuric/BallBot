@@ -289,7 +289,7 @@ toc
 
 % saving the nonlinear model to the mat file for further use
 n_model = f_par;
-save nlin_model n_model;
+save generated\nlin_model n_model;
 
 %% Creating a matlab function from nonlinear model
 disp('Creating a matlab function from nonlinear model');
