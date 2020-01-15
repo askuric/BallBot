@@ -2,6 +2,7 @@ function initialplot_compare_nlin(fun_nlin,G_lin,K,X0,T_max,fig1,fig2)
 %   Function plotting comparison of initial condiiton (X0) responses of the
 %   nonlinear system provided by (fun_nlin) and linear system (G_lin) 
 %   by closing the loop with the controller (K)
+
     
 % nonlinear simulation
 Ts = 0.01;
@@ -36,13 +37,19 @@ u_lin = -x_lin*K';
 toc
 
 %% plotting x
+state_var_names = {'\vartheta_x', '\vartheta_x`','\vartheta_y', '\vartheta_y`','\vartheta_z', '\vartheta_z`', '\phi_x', '\phi_x`', '\phi_y', '\phi_y`'};
 figure(fig1);
 for i=1:10
     subplot(5,2,i)
     plot(t_lin,x_lin(:,i));
     hold on
     plot(t_nlin,x_nlin(:,i));
-    title(strcat('x',num2str(i)));
+    title(strcat(state_var_names{i},'(x_',num2str(i),') '));
+    if mod(i,2)
+        ylabel('rad')
+    else
+        ylabel('rad/s')
+    end
     grid on
 end
 subplot(5,2,1)
@@ -50,6 +57,7 @@ legend('linear','non-linear')
 subplot(5,2,2)
 legend('linear','non-linear')
 sgtitle('Initial condition response - Linearized and nonlinear system with LQR controller - states')
+drawnow
 % plotting u
 figure(fig2)
 for i=1:3
@@ -57,11 +65,13 @@ for i=1:3
     plot(t_lin,u_lin(:,i));
     hold on
     plot(t_nlin,u_nlin(:,i),'r');
-    title(strcat('u',num2str(i)));
+    title(strcat('T_',num2str(i),'(u_',num2str(i),')'));
+    ylabel('Nm')
     grid on
 end
 subplot(3,1,1)
 legend('linear','non-linear')
 sgtitle('Initial condition response - Linearized and nonlinear system with LQR controller - control signals')
+drawnow
 end
 

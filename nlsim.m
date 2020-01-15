@@ -34,6 +34,7 @@ function nlsim(fun_nlin, K, u,t_nlin, P, figure_x,figure_u)
     [y_lin t_lin c]= lsim(lft(P,-K),u,t_nlin);
     
     %% plotting x
+    state_var_names = {'\vartheta_x', '\vartheta_x`','\vartheta_y', '\vartheta_y`','\vartheta_z', '\vartheta_z`', '\phi_x', '\phi_x`', '\phi_y', '\phi_y`'};
     figure(figure_x)
     hold on
     for i=1:10
@@ -41,9 +42,18 @@ function nlsim(fun_nlin, K, u,t_nlin, P, figure_x,figure_u)
         plot(t_nlin,y_lin(:,i));
         hold on
         plot(t_nlin,x_nlin(:,i),'r');
-        title(strcat('x',num2str(i)));
+        title(strcat(state_var_names{i},'(x_',num2str(i),') '));
+        if mod(i,2)
+            ylabel('rad')
+        else
+            ylabel('rad/s')
+        end
         grid on
     end
+    subplot(5,2,1)
+    legend('linear','nonlinear')
+    drawnow
+    
     figure(figure_u)
     % plotting u
     for i=1:3
@@ -51,13 +61,13 @@ function nlsim(fun_nlin, K, u,t_nlin, P, figure_x,figure_u)
         plot(t_nlin,y_lin(:,10+i));
         hold on
         plot(t_nlin,u_nlin(:,i),'r');
-        title(strcat('u',num2str(i)));
+        title(strcat('T_',num2str(i),'(u_',num2str(i),')'));
+        ylabel('Nm')
         grid on
     end
-%     subplot(12,1,i)
-%     legend('linear','non-linear')
-%     subplot(5,2,2)
-%     legend('linear','non-linear')
+    subplot(3,1,1)
+    legend('linear','nonlinear')
+    drawnow
 
     
 end
