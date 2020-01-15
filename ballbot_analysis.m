@@ -290,6 +290,22 @@ legend('H-infinity','LQR')
 figure(306)
 sgtitle('LQR and H-inifnity disturbance worst case  params - control signal')
 legend('H-infinity','LQR')
+
+%% Bode diagram of comparison 
+H_lqr = lft(P,-K_lqr);
+H_hinf = lft(P,-K_hinf);
+bodemg(H_lqr(1:10,1),'r',311);
+hold on
+bodemg(H_hinf(1:10,1),'b',311);
+legend('LQR', 'H-inf')
+sgtitle('Noise attenuation control loop to the input n_1');
+
+bodemg(H_lqr(1:10,5),'r',312);
+hold on
+bodemg(H_hinf(1:10,5),'b',312);
+legend('LQR', 'H-inf')
+sgtitle('Disturbance rejection control loop to the input T_x (w_1)');
+
 %% complarison H-infinity and nonlinear model
 nlsim(@nlin_model_wcu,K_hinf,dist,t_d,P_wc,307,308);
 figure(307);
