@@ -42,7 +42,6 @@ if N <= 20 % a bit of protection of too much plotting
     tic
     X0 = [pi/20 0 pi/20 0 0 0 0 0 0 0]';
     t_sim = 4;
-    figure(100);
     for i = 1:N
         initialplt(T_arr{i},'b',X0,t_sim,100); 
     end
