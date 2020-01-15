@@ -19,7 +19,7 @@ disp('Starting full nonlinear Ballbot model derivation');
 disp('This will take few minutes');
 
 clear all
-mldir('generated')
+mkdir('generated')
 addpath('./generated')
 %% Model physical parameters definition
 % Introducing the physical parameters of the system
