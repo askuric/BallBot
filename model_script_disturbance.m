@@ -296,7 +296,7 @@ disp('Creating a matlab function from nonlinear model');
 disp('This may take few minutes');
 tic; 
 f = subs(n_model, params_s, params_n);
-nlin_model = matlabFunction(f,'Optimize',false,'Vars',[x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3 w1 w2],'File','nlin_model_n');
+nlin_model = matlabFunction(f,'Optimize',false,'Vars',[x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3 w1 w2],'File','generated\nlin_model_n');
 toc;
 
 %% Adding linearisation point
@@ -334,9 +334,9 @@ toc
 %% Create A and B parametric functions
 disp('Create A and B and W parametric functions - physical parameters');
 tic;
-matlabFunction(A_,'file','fA','Optimize',false, 'Vars',[rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi]);
-matlabFunction(B_,'file','fB','Optimize',false, 'Vars',[rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi]);
-matlabFunction(W_,'file','fW','Optimize',false, 'Vars',[rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi]);
+matlabFunction(A_,'file','generated\fA','Optimize',false, 'Vars',[rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi]);
+matlabFunction(B_,'file','generated\fB','Optimize',false, 'Vars',[rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi]);
+matlabFunction(W_,'file','generated\fW','Optimize',false, 'Vars',[rK rW rA l mAW mK A_ThetaAWx A_ThetaAWy A_ThetaAWz ThetaKi ThetaWi]);
 toc
 
 

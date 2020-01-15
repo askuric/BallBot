@@ -18,7 +18,9 @@
 disp('Starting full nonlinear Ballbot model derivation');
 disp('This will take few minutes');
 
-% %clear all
+clear all
+mldir('generated')
+addpath('./generated')
 %% Model physical parameters definition
 % Introducing the physical parameters of the system
 disp('Model physical parameters with uncertainties');
@@ -186,18 +188,25 @@ dist = [n; wx; wy];
 % plotting the distrubance signal
 % measurement noise
 figure(200);
+state_var_names = {'\vartheta_x', '\vartheta_x`','\vartheta_y', '\vartheta_y`'};
 for i = 1:4
     subplot(6,1,i);
     plot(t_d,dist(i,:),'LineWidth',1.5);
     hold on
-    title(strcat('n',num2str(i)))
+    title(strcat(state_var_names{i},'(n',num2str(i),')'))
+    if mod(i,2)
+        ylabel('rad')
+    else
+        ylabel('rad/s')
+    end
 end
-% disturbance forces on body
+w_names={'T_x','T_y'};
 for i = 1:2
     subplot(6,1,4+i);
     plot(t_d,dist(4+i,:),'LineWidth',1.5);
     hold on
-    title(strcat('w',num2str(i)))
+    title(strcat(w_names{i},'(w',num2str(i),')'))
+    ylabel('Nm')
 end
 sgtitle('Testing input signal - measurement noise and disturbance force on the body')
 
