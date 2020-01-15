@@ -21,6 +21,7 @@ disp('This will take few minutes');
 clear all
 mkdir('generated')
 addpath('./generated')
+addpath('./utils')
 %% Model physical parameters definition
 % Introducing the physical parameters of the system
 disp('Model physical parameters with uncertainties');
