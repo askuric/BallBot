@@ -9,7 +9,7 @@ function bodemg(G,color,fig)
     for i=1:10
         subplot(5,2,i)
         loglog(wout,mag(i,:),color);
-        xlim([0.05,1e3])
+        xlim([0.1,1e2])
         hold on
         title(strcat(state_var_names{i},'(x_',num2str(i),') '));
         ylabel('dB')

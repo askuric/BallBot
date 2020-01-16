@@ -141,8 +141,15 @@ wcu = find_wcu_optimisation(l_var, ThetaWi_var, ThetaKi_var, A_ThetaAWx_var, A_T
 
 %% Nominal and worst case linear model comparison
 disp('Nominal and worst case linear model comparison')
-disp('Initial condition response');
+%% Margin comparison
+disp('Margin comparison')
+% nominal parameters
+MMIO_n = diskmargin(G_n,K_lqr)
+%worst case parameters
+MMIO_wc = diskmargin(wcu.G,K_lqr)
 
+%% Initial condition response
+disp('Initial condition response');
 % initialplot
 X0 = [pi/20 0 pi/20 0 pi/10 0 0 0 0 0]';
 T_sim = 3; %sec=
@@ -233,7 +240,7 @@ D_u = zeros(10,5);
 C_z = [G_n.c; zeros(3,10)];
 D_z = [D_n  D_u ; [zeros(3,6) 5*eye(3)]];
 % model for h-infinity synthesis containing z output
-Pz = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_z; [zeros(10,4) D_u] ]);
+Pz = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_z; [D_n D_u] ]);
 D_y = [D_n  D_u ; [zeros(3,6) eye(3)]];
 % model for simulation using y as output
 P = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_y; [D_n D_u] ]);
@@ -242,7 +249,7 @@ P = ss(G_n.a, [B_n B_w G_n.b], [C_z; G_n.c], [ D_y; [D_n D_u] ]);
 % disturbance matrix
 B_w_wcu = fW(rK_n, rW_n, rA_n, wcu.l, mAW_n, mK_n, wcu.A_ThetaAWx, wcu.A_ThetaAWy, wcu.A_ThetaAWz, wcu.ThetaKi, wcu.ThetaWi);
 % model for h-infinity synthesis containing z output
-Pz_wc = ss(wcu.G.a, [B_n B_w_wcu wcu.G.b], [C_z; wcu.G.c], [ D_z; [zeros(10,4) D_u]]);
+Pz_wc = ss(wcu.G.a, [B_n B_w_wcu wcu.G.b], [C_z; wcu.G.c], [ D_z; [D_n D_u]]);
 % model for simulation using y as output
 P_wc = ss(wcu.G.a, [B_n B_w_wcu wcu.G.b], [C_z; wcu.G.c], [ D_y; [D_n D_u]]);
 %% Initial LQR disturbance rejection
@@ -349,7 +356,7 @@ legend('H-inf ss','LQR')
 % the transfrer functions on the plot making it the most robustly stable one.
 
 figure(406)
-bodemag(lft(P,K_lqr),'r',lft(P,K_hinf),'b',lft(P,K_hinf_ss),'k');
+bodemag(lft(P,-K_lqr),'r',lft(P,-K_hinf),'b',lft(P,K_hinf_ss),'k');
 legend('LQR','H-inf gain','F-inf ss');
 %% H-infintiy norms for nominal and worst case parameter linear model comparison of LQR, fixed H-inifnity and Full H-Infinity controller
 hinfnorm(lft(P,-K_lqr))
@@ -366,5 +373,3 @@ figure(407)
 sigma(lft(P,-K_lqr),'r',lft(P,-K_hinf),'b',lft(P,-K_hinf_ss),'k',lft(P_wc,-K_lqr),'--r',lft(P_wc,-K_hinf),'--b',lft(P_wc,-K_hinf_ss),'--k',(0.05:0.01:1000));
 legend('LQR','H-inf','H-inf ss','LQR (wc)','H-inf (wc)','H-inf ss (wc)');
 grid on;
-
-
