@@ -15,13 +15,3 @@ n_model_wcu = subs(n_model, params_s, params_wcu);
 disp('Writing function in the file');
 nlin_model_w = matlabFunction(n_model_wcu,'Optimize',false,'Vars',[x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 u1 u2 u3 w1 w2],'File','generated\nlin_model_wcu');
 toc;
-
-%% Simulate and compare worst case linear and nonliner
-disp('Simulate and compare worst case linear and nonliner')
-X0 = [pi/20 0 -pi/20 0 pi/20 0 0 0 0 0]';
-T_sim = 4; %sec
-initialplot_compare_nlin(@nlin_model_wcu,wcu.G,K_lqr,X0,T_sim,120,121)
-figure(120);
-sgtitle('Linearized and nonlinear WC system with LQR controller - states')
-figure(121);
-sgtitle('Linearized and nonlinear WC system with LQR controller - control signals')

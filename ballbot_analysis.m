@@ -21,7 +21,8 @@ disp('This will take few minutes');
 clear all
 mkdir('generated')
 addpath('./generated')
-addpath('./utils')
+addpath('./visualisation')
+addpath('./optimisation')
 %% Model physical parameters definition
 % Introducing the physical parameters of the system
 disp('Model physical parameters with uncertainties');
@@ -58,7 +59,7 @@ params_n = [rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_Th
 % - Creation of simulation functions for further analyisis - linear and nonlinear
 % 
 % Execution can take 5-10 minutes
-model_script_disturbance;
+model_generation;
 
 %% Linear nominal model sysnthesys
 % Creation of linear transfer funciton based on linearised matrices of the Ballbot 
@@ -161,7 +162,15 @@ grid on;
 sgtitle('Closed loop (LQR) - Singular value plot comparison nominal and worst case')
 	   
 %% Validate worst case performance with the nonlinear model
-visualize_nonlinear_worst_case;
+% generate the worst  case parameters nonlinear model ans save it to  nlin_model_wcu function
+model_generation_worst_case;
+
+% Simulate and compare worst case linear and nonliner
+initialplot_compare_nlin(@nlin_model_wcu,wcu.G,K_lqr,X0,T_sim,120,121)
+figure(120);
+sgtitle('Linearized and nonlinear WC system with LQR controller - states')
+figure(121);
+sgtitle('Linearized and nonlinear WC system with LQR controller - control signals')
 
 %% Distrubance rejection and noise attenuation
 % Ballbot has two type of disturbance 
