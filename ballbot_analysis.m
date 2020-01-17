@@ -275,13 +275,13 @@ sigma(lft(P,-K_lqr),'r',lft(P_wc,-K_lqr),'b',(0.1:0.01:100));
 legend('nominal','worst case');
 grid on
 title('Singular values plot for distrubance rejection closed loop with LQR')
-%% H-infinity controller design
-% Fixed structure - gain U=K*x; 
-K_tun = realp('K_t',ones(3,10));   
+%% H-infinity controller design fixed
+% hinf fixed structure - gain
+K_tun = realp('K_t',K_lqr);   
 K_tun.Minimum = -100*ones(3,10); 
 K_tun.Maximum = 100*ones(3,10);
-[C,gamma,info] = hinfstruct(Pz_wc,-K_tun);
-K_hinf = C.Blocks.K_t.Value
+opts = hinfstructOptions('TargetGain',0,'MaxIter',500,'RandomStart',3,'MaxFrequency',10);
+[C,gamma,info] = hinfstruct(Pz_wc,-K_tun,opts);
 
 %% Comparison of H-infinity and LQR 
 %% plot singular values of distrurbance rejection loop
