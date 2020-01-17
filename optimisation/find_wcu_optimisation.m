@@ -15,7 +15,7 @@ par_ub= 1 + [l_var ThetaWi_var ThetaKi_var A_ThetaAWx_var A_ThetaAWy_var A_Theta
 % initial set of weights
 par0 = (par_ub - par_lb).*rand(1,6) + par_lb; 
 
-options = optimoptions('fmincon','Display','iter','MaxIterations',30);
+options = optimoptions('fmincon','Display','iter','MaxIterations',30,'Algorithm','sqp');
 f = @(x)optimisiation_func(x, K , rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n);
 [X,FVAL,EXITFLAG] = fmincon(f,par0,[],[],[],[],par_lb,par_ub,[],options)
 

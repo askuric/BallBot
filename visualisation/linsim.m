@@ -9,7 +9,7 @@ function linsim(G1,color,u,t,fy,fu)
     hold on
     for i=1:10
         subplot(5,2,i)
-        plot(t,y(:,i));
+        plot(t,y(:,i),color);
         hold on
         title(strcat(state_var_names{i},'(x_',num2str(i),') '));
         if mod(i,2)
@@ -24,7 +24,7 @@ function linsim(G1,color,u,t,fy,fu)
     % plotting u
     for i=1:3
         subplot(3,1,i)
-        plot(t,y(:,10+i));
+        plot(t,y(:,10+i),color);
         hold on
         title(strcat('T_',num2str(i),'(u_',num2str(i),')'));
         ylabel('Nm')
