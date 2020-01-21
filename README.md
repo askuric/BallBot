@@ -30,9 +30,13 @@ ballbot_analysis_live.mdx
 
 
 ### Folder structure
- - visualisation
-	- helping functions for visualisation
- - optimisation	
-	- helping functions for optimisation
- - figures
-	- figures used in the report "Ballbot robust analysis report.pdf"
+```bash
+BallBot
+│   README.md  
+|   ballbot_analyisis_live.mdx  	# Matlab script running teh analysis
+|   Ballbot robust analysis report.pdf	# Project report
+└─── visualtisation 			# Helping functions for visualisation
+└─── optimisation   			# Helping functions for optimisation
+└─── figures        			# Figures used in the report "Ballbot robust analysis report.pdf"
+└─── documentation  			# Papers, scripts and documents used for analysis
+```
