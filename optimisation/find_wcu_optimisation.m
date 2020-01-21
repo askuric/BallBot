@@ -15,7 +15,7 @@ par_ub= 1 + [l_var ThetaWi_var ThetaKi_var A_ThetaAWx_var A_ThetaAWy_var A_Theta
 % initial set of weights
 par0 = (par_ub - par_lb).*rand(1,6) + par_lb; 
 
-options = optimoptions('fmincon','Display','iter','MaxIterations',30,'Algorithm','sqp');
+options = optimoptions('fmincon','Display','iter','MaxIterations',30,'Algorithm','active-set');
 f = @(x)optimisiation_func(x, K , rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n);
 [X,FVAL,EXITFLAG] = fmincon(f,par0,[],[],[],[],par_lb,par_ub,[],options)
 
@@ -37,7 +37,7 @@ A_u= fA(rK_n, rW_n, rA_n, wcu.l, mAW_n, mK_n, wcu.A_ThetaAWx, wcu.A_ThetaAWy, wc
 B_u= fB(rK_n, rW_n, rA_n, wcu.l, mAW_n, mK_n, wcu.A_ThetaAWx, wcu.A_ThetaAWy, wcu.A_ThetaAWz, wcu.ThetaKi, wcu.ThetaWi);
 % state space model from matrices
 wcu.G = ss(A_u,B_u,eye(10),zeros(10,3));
-wcu.max_gain = getPeakGain(wcu.G);
+wcu.max_gain = getPeakGain(feedback(wcu.G,K));
 
 end
 

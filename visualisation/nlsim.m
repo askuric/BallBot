@@ -60,7 +60,7 @@ function nlsim(fun_nlin, K, u,t_nlin, P, figure_x, figure_u)
         plot(t_nlin,y_lin(:,i));
         hold on
         plot(t_nlin,x_nlin(:,i));
-        title(strcat(state_var_names{i},'(x_',num2str(i),') '));
+        title(strcat(state_var_names{i},'(x_{',num2str(i),'}) '));
         if mod(i,2)
             ylabel('rad')
         else

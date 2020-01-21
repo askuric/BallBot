@@ -11,7 +11,7 @@ function bodemg(G,color,fig)
         loglog(wout,mag(i,:),color);
         xlim([0.1,1e2])
         hold on
-        title(strcat(state_var_names{i},'(x_',num2str(i),') '));
+        title(strcat(state_var_names{i},'(x_{',num2str(i),'}) '));
         ylabel('dB')
         grid on
     end

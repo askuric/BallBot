@@ -9,7 +9,7 @@ function initialplt(G,color,X0,T_sim,f)
         subplot(5,2,i)
         plot(t,y(:,i),color);
         hold on
-        title(strcat(state_var_names{i},'(x_',num2str(i),') '));
+        title(strcat(state_var_names{i},'(x_{',num2str(i),'}) '));
         if mod(i,2)
             ylabel('rad')
         else

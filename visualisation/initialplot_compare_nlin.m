@@ -19,7 +19,7 @@ for i = 1:length(t_nlin)
     % input values
     U = -K*X;
     dX = fun_nlin(X(1), X(2), X(3), X(4), X(5), X(6), X(7), X(8), X(9), X(10), U(1), U(2), U(3), 0, 0);
-
+    
     % integration
     X = X + dX*Ts;
     % save for display 
@@ -44,7 +44,7 @@ for i=1:10
     plot(t_lin,x_lin(:,i));
     hold on
     plot(t_nlin,x_nlin(:,i));
-    title(strcat(state_var_names{i},'(x_',num2str(i),') '));
+    title(strcat(state_var_names{i},'(x_{',num2str(i),'}) '));
     if mod(i,2)
         ylabel('rad')
     else

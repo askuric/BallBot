@@ -1,4 +1,6 @@
+function visualise_uncertainty(l_var, ThetaWi_var, ThetaKi_var, A_ThetaAWx_var, A_ThetaAWy_var, A_ThetaAWz_var, K,fig_x,fig_sigma)
 
+global rK_n rW_n  rA_n  l_n  mAW_n mK_n  A_ThetaAWx_n  A_ThetaAWy_n  A_ThetaAWz_n  ThetaKi_n  ThetaWi_n;
 %% Sample uncertain model family
 disp('Sample uncertain models');
 % Cell array of sampled models
@@ -26,26 +28,40 @@ for iter = 1:N
     
     % state space model creation
     G_arr(:,:,iter) = ss(A_u,B_u,eye(10),zeros(10,3)); 
-    T_arr{iter} = feedback(G_arr(:,:,iter),K_lqr);
+    T_arr{iter} = feedback(G_arr(:,:,iter),K);
     if ~isstable(T_arr{iter})
         fprintf('%d - unstable\n',iter);  
     end
 end
 
+% A matrix
+A_n= fA(rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n);
+% B matrix
+B_n= fB(rK_n, rW_n, rA_n, l_n, mAW_n, mK_n, A_ThetaAWx_n, A_ThetaAWy_n, A_ThetaAWz_n, ThetaKi_n, ThetaWi_n);
+    
 % nominal model closed looop
-T_n = feedback(G_n,K_lqr);
+T_n = feedback(ss(A_n,B_n,eye(10),zeros(10,3)),K);
+
+if(isprop(K,'A'))
+    % full state space controller
+    nstates = length(K.A(:,1));
+    Xk = zeros(1,nstates);
+else
+   Xk =[]; 
+end
+
 
 %% Uncertainty model visualisation initialplot
 disp('Uncertain model visualisation - initial condition response');
 disp('It may take few minutes');
 if N <= 20 % a bit of protection of too much plotting
     tic
-    X0 = [pi/20 0 pi/20 0 0 0 0 0 0 0]';
+    X0 = [pi/20 0 pi/20 0 pi/10 0 0 0 0 0 Xk]';
     t_sim = 4;
     for i = 1:N
-        initialplt(T_arr{i},'b',X0,t_sim,100); 
+        initialplt(T_arr{i},'b',X0,t_sim,fig_x); 
     end
-    initialplt(T_n,'.-r',X0,t_sim,100);
+    initialplt(T_n,'.-r',X0,t_sim,fig_x);
     toc
 else
     disp('Too mmany samples to draw plot');    
@@ -57,7 +73,7 @@ disp('Uncertain model visualisation - singular value plot');
 disp('It may take few minutes');
 if N <= 20 % a bit of protection of too much plotting
     tic
-    figure(101);
+    figure(fig_sigma);
     for i = 1:N
         sigma(T_arr{i},'b');
         hold on;
@@ -69,3 +85,6 @@ else
     disp('Too mmany samples to draw plot');
 end
 sgtitle('Closed loop (LQR) - Singular value plot with parameter uncertainty')
+
+end
+

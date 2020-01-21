@@ -2,7 +2,7 @@
 
 Ballbot robust stability analysis and validation script
 
-### Developement report on the [link](https://docs.google.com/document/d/1KuV1hnbRlKuDTEC0jqM1Jo_AfO3jm5TrJKgC7SyZZuM/edit?usp=sharing)
+### Developement report on the [link](https://drive.google.com/file/d/173H89YTg0KzFeuuBQUfmOdzcJab17GtW/view?usp=sharing)
 
 ### Contents:
 - Nonlinear model synthesis with distrubances
@@ -28,8 +28,11 @@ Be aware that it may take some time to execute completely. 10-20 minutes
 ballbot_analysis_live.mdx
 ```
 
-- Also it can be started by writing in Matlab Command Window
-```shell
-ballbot_analysis
-```
 
+### Folder structure
+ - visualisation
+	- helping functions for visualisation
+ - optimisation	
+	- helping functions for optimisation
+ - figures
+	- figures used in the report "Ballbot robust analysis report.pdf"
