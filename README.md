@@ -28,11 +28,11 @@ Be aware that it may take some time to execute completely. 10-20 minutes
 ballbot_analysis_live.mdx
 ```
 
-- If you want to run analysis of already optimised and calculated values of controllers the live script `ballbot_analysis_from_woskspace_live.mdx` and follow the execution. 4
+- If you want to run analysis of already optimised and calculated values of controllers the live script `ballbot_analysis_example_live.mdx` and follow the execution. 4
 In order to run this script you need to have `example_worspace.mat` file with corresponding `example_generated` forlder.
 Be aware that it may take some time to execute completely. 10-20 minutes 
 ```shell
-ballbot_analysis_from_woskspace_live.mdx
+ballbot_analysis_example_live.mdx
 ```
 
 ### Folder structure
@@ -40,7 +40,7 @@ ballbot_analysis_from_woskspace_live.mdx
 BallBot
 │   README.md  
 |   ballbot_analyisis_live.mdx  	                               # Matlab script running the analysis
-|   ballbot_analyisis_from_workspace_live.mdx  	                 # Matlab script running the from mat file `workspace.mat`
+|   ballbot_analyisis_example_live.mdx  	                       # Matlab script running the precalculated analysis
 |   example_worspace.mat                                         # Mat file containing one precalcualted workspace
 |   Ballbot robust analysis report.pdf	                         # Project report
 |   H-ininfity equations and system descriptionexplanation.pdf	 # H-infinity system representation expalnation
