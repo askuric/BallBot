@@ -39,10 +39,11 @@ ballbot_analysis_from_woskspace_live.mdx
 ```bash
 BallBot
 │   README.md  
-|   ballbot_analyisis_live.mdx  	              # Matlab script running the analysis
-|   ballbot_analyisis_from_workspace_live.mdx  	# Matlab script running the from mat file `workspace.mat`
-|   worspace.mat                                # Mat file containing one precalcualted workspace
-|   Ballbot robust analysis report.pdf	        # Project report
+|   ballbot_analyisis_live.mdx  	                                      # Matlab script running the analysis
+|   ballbot_analyisis_from_workspace_live.mdx  	                        # Matlab script running the from mat file `workspace.mat`
+|   worspace.mat                                                        # Mat file containing one precalcualted workspace
+|   Ballbot robust analysis report.pdf	                                # Project report
+|   H-ininfity equations and system descriptionexplanation.pdf	        # H-infinity system representation expalnation
 └─── visualtisation 			# Helping functions for visualisation
 └─── optimisation   			# Helping functions for optimisation
 └─── figures        			# Figures used in the report "Ballbot robust analysis report.pdf"
